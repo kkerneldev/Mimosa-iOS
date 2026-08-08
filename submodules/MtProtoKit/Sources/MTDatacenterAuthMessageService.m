@@ -1,5 +1,4 @@
 #import <MtProtoKit/MTDatacenterAuthMessageService.h>
-
 #import <MtProtoKit/MTLogging.h>
 #import <MtProtoKit/MTContext.h>
 #import <MtProtoKit/MTProto.h>
@@ -47,29 +46,31 @@ static NSArray<MTDatacenterAuthPublicKey *> *defaultPublicKeys(bool isProduction
     static NSArray<MTDatacenterAuthPublicKey *> *testingPublicKeys = nil;
     static NSArray<MTDatacenterAuthPublicKey *> *productionPublicKeys = nil;
     static dispatch_once_t onceToken;
+
     dispatch_once(&onceToken, ^{
         testingPublicKeys = @[
             [[MTDatacenterAuthPublicKey alloc] initWithPublicKey:@"-----BEGIN RSA PUBLIC KEY-----\n"
-             "MIIBCgKCAQEAyRMdGePJxyDsWMRvVjnM7fRiZDc0YdTQicSK6GpfMsOYO/QI7kJh\n"
-             "4885RFVLQqjVgc4fJ/y3tXk8Yk5Wms6rOeZ032MWDPBrzjo4AlAiG5alpvXdd9as\n"
-             "aMYNj856mztLVSmg1sr35ISOvH784CvzlPYkS4eCSahfDwu4xUq+FQaUDZkVzb0l\n"
-             "OyCB5PZGmVZ1aKiV6iti51tTFEwGnxc9CpFleBjpYGpKnwswFF8X6N7HCTrzshCl\n"
-             "Brvg4nPddCF4WnFMIdi5uC0m//2+IyFEMrCc1u21wPuMGgC0qytj8wF4vPOCAr+x\n"
-             "yePs7NNor3h+dorjduYvePy3gtmFpUIE2QIDAQAB\n"
+             "MIIBCgKCAQEAwd2ffskDPXJ/CEbEkEPy5eLBiJBwgTufbAzWk8/vO3BdxBgrEzMu\n"
+             "24WTdI6nANT2l1iBi4rB7OGh0XugTYOgJerYDkQa20eHVP9lWzTxvSJDCwd9KjTb\n"
+             "VqxtcZtEsUxDtvA0dR8TGz7usJ510Gy+kudQi00PlJpJAAuDZaYaFZtTwWCGGtJC\n"
+             "iFCKxbU9ALydpl1DEX8Z3YXmPeQZojDQxYzYJ/Km44V929gY+UW67v88ODckTNBq\n"
+             "VPudm01evKyDEkYVWphgBAE6EpHMawEcmewg6tf7Xe8Ba6rOjuuxpupiHor/xlyh\n"
+             "iErYVD+S0lfb5AD9a6OB0dVI1RpvSzNeRQIDAQAB\n"
              "-----END RSA PUBLIC KEY-----"]
         ];
 
         productionPublicKeys = @[
             [[MTDatacenterAuthPublicKey alloc] initWithPublicKey:@"-----BEGIN RSA PUBLIC KEY-----\n"
-             "MIIBCgKCAQEAyRMdGePJxyDsWMRvVjnM7fRiZDc0YdTQicSK6GpfMsOYO/QI7kJh\n"
-             "4885RFVLQqjVgc4fJ/y3tXk8Yk5Wms6rOeZ032MWDPBrzjo4AlAiG5alpvXdd9as\n"
-             "aMYNj856mztLVSmg1sr35ISOvH784CvzlPYkS4eCSahfDwu4xUq+FQaUDZkVzb0l\n"
-             "OyCB5PZGmVZ1aKiV6iti51tTFEwGnxc9CpFleBjpYGpKnwswFF8X6N7HCTrzshCl\n"
-             "Brvg4nPddCF4WnFMIdi5uC0m//2+IyFEMrCc1u21wPuMGgC0qytj8wF4vPOCAr+x\n"
-             "yePs7NNor3h+dorjduYvePy3gtmFpUIE2QIDAQAB\n"
+             "MIIBCgKCAQEAwd2ffskDPXJ/CEbEkEPy5eLBiJBwgTufbAzWk8/vO3BdxBgrEzMu\n"
+             "24WTdI6nANT2l1iBi4rB7OGh0XugTYOgJerYDkQa20eHVP9lWzTxvSJDCwd9KjTb\n"
+             "VqxtcZtEsUxDtvA0dR8TGz7usJ510Gy+kudQi00PlJpJAAuDZaYaFZtTwWCGGtJC\n"
+             "iFCKxbU9ALydpl1DEX8Z3YXmPeQZojDQxYzYJ/Km44V929gY+UW67v88ODckTNBq\n"
+             "VPudm01evKyDEkYVWphgBAE6EpHMawEcmewg6tf7Xe8Ba6rOjuuxpupiHor/xlyh\n"
+             "iErYVD+S0lfb5AD9a6OB0dVI1RpvSzNeRQIDAQAB\n"
              "-----END RSA PUBLIC KEY-----"]
         ];
     });
+
     if (isProduction) {
         return productionPublicKeys;
     } else {
@@ -77,11 +78,15 @@ static NSArray<MTDatacenterAuthPublicKey *> *defaultPublicKeys(bool isProduction
     }
 }
 
-static MTDatacenterAuthPublicKey *selectPublicKey(id<EncryptionProvider> encryptionProvider, NSArray<NSNumber *> *fingerprints, NSArray<MTDatacenterAuthPublicKey *> *publicKeys) {
+static MTDatacenterAuthPublicKey *selectPublicKey(
+    id<EncryptionProvider> encryptionProvider,
+    NSArray<NSNumber *> *fingerprints,
+    NSArray<MTDatacenterAuthPublicKey *> *publicKeys
+) {
     for (NSNumber *nFingerprint in fingerprints) {
         for (MTDatacenterAuthPublicKey *key in publicKeys) {
             uint64_t keyFingerprint = [key fingerprintWithEncryptionProvider:encryptionProvider];
-            
+
             if ([nFingerprint unsignedLongLongValue] == keyFingerprint) {
                 return key;
             }
@@ -102,26 +107,26 @@ typedef enum {
 @interface MTDatacenterAuthMessageService ()
 {
     id<EncryptionProvider> _encryptionProvider;
-    
+
     bool _tempAuth;
-    
+
     MTDatacenterAuthStage _stage;
     int64_t _currentStageMessageId;
     int32_t _currentStageMessageSeqNo;
     id _currentStageTransactionId;
-    
+
     NSData *_nonce;
     NSData *_serverNonce;
     NSData *_newNonce;
-    
+
     NSData *_dhP;
     NSData *_dhQ;
     int64_t _dhPublicKeyFingerprint;
     NSData *_dhEncryptedData;
-    
+
     MTDatacenterAuthKey *_authKey;
     NSData *_encryptedClientData;
-    
+
     NSArray<MTDatacenterAuthPublicKey *> *_publicKeys;
 }
 
@@ -142,12 +147,15 @@ typedef enum {
 
 - (NSArray<MTDatacenterAuthPublicKey *> *)convertPublicKeysFromDictionaries:(NSArray<NSDictionary *> *)list {
     NSMutableArray<MTDatacenterAuthPublicKey *> *cdnKeys = [[NSMutableArray alloc] init];
+
     for (NSDictionary *dict in list) {
         NSString *key = dict[@"key"];
+
         if ([key isKindOfClass:[NSString class]]) {
             [cdnKeys addObject:[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:key]];
         }
     }
+
     return cdnKeys;
 }
 
@@ -156,21 +164,23 @@ typedef enum {
     _currentStageMessageId = 0;
     _currentStageMessageSeqNo = 0;
     _currentStageTransactionId = nil;
-    
+
     _nonce = nil;
     _serverNonce = nil;
     _newNonce = nil;
-    
+
     _dhP = nil;
     _dhQ = nil;
     _dhPublicKeyFingerprint = 0;
     _dhEncryptedData = nil;
-    
+
     _authKey = nil;
     _encryptedClientData = nil;
-    
+
     if (mtProto.cdn) {
-        _publicKeys = [self convertPublicKeysFromDictionaries:[mtProto.context publicKeysForDatacenterWithId:mtProto.datacenterId]];
+        _publicKeys = [self convertPublicKeysFromDictionaries:
+                       [mtProto.context publicKeysForDatacenterWithId:mtProto.datacenterId]];
+
         if (_publicKeys.count == 0) {
             _stage = MTDatacenterAuthStageWaitingForPublicKeys;
             [mtProto.context publicKeysForDatacenterWithIdRequired:mtProto.datacenterId];
@@ -181,7 +191,7 @@ typedef enum {
         _publicKeys = defaultPublicKeys(!mtProto.context.isTestingEnvironment);
         _stage = MTDatacenterAuthStagePQ;
     }
-    
+
     [mtProto requestSecureTransportReset];
     [mtProto requestTransportTransaction];
 }
@@ -190,8 +200,10 @@ typedef enum {
 {
     [self reset:mtProto];
 }
-    
-- (void)mtProtoPublicKeysUpdated:(MTProto *)mtProto datacenterId:(NSInteger)datacenterId publicKeys:(NSArray<NSDictionary *> *)publicKeys {
+
+- (void)mtProtoPublicKeysUpdated:(MTProto *)mtProto
+                     datacenterId:(NSInteger)datacenterId
+                       publicKeys:(NSArray<NSDictionary *> *)publicKeys {
     if (!mtProto.cdn) {
         return;
     }
@@ -199,6 +211,7 @@ typedef enum {
     if (_stage == MTDatacenterAuthStageWaitingForPublicKeys) {
         if (mtProto.datacenterId == datacenterId) {
             _publicKeys = [self convertPublicKeysFromDictionaries:publicKeys];
+
             if (_publicKeys != nil && _publicKeys.count != 0) {
                 _stage = MTDatacenterAuthStagePQ;
                 [mtProto requestTransportTransaction];
@@ -207,10 +220,17 @@ typedef enum {
     }
 }
 
-- (MTMessageTransaction *)mtProtoMessageTransaction:(MTProto *)mtProto authInfoSelector:(MTDatacenterAuthInfoSelector)authInfoSelector sessionInfo:(MTSessionInfo *)sessionInfo scheme:(MTTransportScheme *)scheme
+- (MTMessageTransaction *)mtProtoMessageTransaction:(MTProto *)mtProto
+                                     authInfoSelector:(MTDatacenterAuthInfoSelector)authInfoSelector
+                                        sessionInfo:(MTSessionInfo *)sessionInfo
+                                              scheme:(MTTransportScheme *)scheme
 {
     if (MTLogEnabled()) {
-        MTLog(@"[MTDatacenterAuthMessageService#%p mtProto#%p (media: %s) mtProtoMessageTransaction scheme:%@]", self, mtProto, mtProto.media ? "true" : "false", scheme);
+        MTLog(@"[MTDatacenterAuthMessageService#%p mtProto#%p (media: %s) mtProtoMessageTransaction scheme:%@]",
+              self,
+              mtProto,
+              mtProto.media ? "true" : "false",
+              scheme);
     }
 
     if (_currentStageTransactionId == nil)
@@ -219,6 +239,7 @@ typedef enum {
         {
             case MTDatacenterAuthStageWaitingForPublicKeys:
                 break;
+
             case MTDatacenterAuthStagePQ:
             {
                 if (_nonce == nil)
@@ -227,24 +248,45 @@ typedef enum {
                     __unused int result = SecRandomCopyBytes(kSecRandomDefault, 16, nonceBytes);
                     _nonce = [[NSData alloc] initWithBytes:nonceBytes length:16];
                 }
-                
+
                 MTBuffer *reqPqBuffer = [[MTBuffer alloc] init];
                 [reqPqBuffer appendInt32:(int32_t)0xbe7e8ef1];
                 [reqPqBuffer appendBytes:_nonce.bytes length:_nonce.length];
-                
-                NSString *messageDescription = [NSString stringWithFormat:@"reqPq nonce:%@", _nonce];
-                MTOutgoingMessage *message = [[MTOutgoingMessage alloc] initWithData:reqPqBuffer.data metadata:messageDescription additionalDebugDescription:nil shortMetadata:messageDescription messageId:_currentStageMessageId messageSeqNo:_currentStageMessageSeqNo];
-                return [[MTMessageTransaction alloc] initWithMessagePayload:@[message] prepared:nil failed:nil completion:^(NSDictionary *messageInternalIdToTransactionId, NSDictionary *messageInternalIdToPreparedMessage, __unused NSDictionary *messageInternalIdToQuickAckId)
+
+                NSString *messageDescription =
+                    [NSString stringWithFormat:@"reqPq nonce:%@", _nonce];
+
+                MTOutgoingMessage *message =
+                    [[MTOutgoingMessage alloc] initWithData:reqPqBuffer.data
+                                                   metadata:messageDescription
+                                   additionalDebugDescription:nil
+                                                shortMetadata:messageDescription
+                                                   messageId:_currentStageMessageId
+                                                 messageSeqNo:_currentStageMessageSeqNo];
+
+                return [[MTMessageTransaction alloc]
+                    initWithMessagePayload:@[message]
+                    prepared:nil
+                    failed:nil
+                    completion:^(NSDictionary *messageInternalIdToTransactionId,
+                                 NSDictionary *messageInternalIdToPreparedMessage,
+                                 __unused NSDictionary *messageInternalIdToQuickAckId)
                 {
-                    if (_stage == MTDatacenterAuthStagePQ && messageInternalIdToTransactionId[message.internalId] != nil && messageInternalIdToPreparedMessage[message.internalId] != nil)
+                    if (_stage == MTDatacenterAuthStagePQ &&
+                        messageInternalIdToTransactionId[message.internalId] != nil &&
+                        messageInternalIdToPreparedMessage[message.internalId] != nil)
                     {
-                        MTPreparedMessage *preparedMessage = messageInternalIdToPreparedMessage[message.internalId];
+                        MTPreparedMessage *preparedMessage =
+                            messageInternalIdToPreparedMessage[message.internalId];
+
                         _currentStageMessageId = preparedMessage.messageId;
                         _currentStageMessageSeqNo = preparedMessage.seqNo;
-                        _currentStageTransactionId = messageInternalIdToTransactionId[message.internalId];
+                        _currentStageTransactionId =
+                            messageInternalIdToTransactionId[message.internalId];
                     }
                 }];
             }
+
             case MTDatacenterAuthStageReqDH:
             {
 #if DEBUG
@@ -252,7 +294,7 @@ typedef enum {
                     [mtProto simulateDisconnection];
                 }
 #endif
-                
+
                 MTBuffer *reqDhBuffer = [[MTBuffer alloc] init];
                 [reqDhBuffer appendInt32:(int32_t)0xd712e4be];
                 [reqDhBuffer appendBytes:_nonce.bytes length:_nonce.length];
@@ -261,20 +303,48 @@ typedef enum {
                 [reqDhBuffer appendTLBytes:_dhQ];
                 [reqDhBuffer appendInt64:_dhPublicKeyFingerprint];
                 [reqDhBuffer appendTLBytes:_dhEncryptedData];
-                
-                NSString *messageDescription = [NSString stringWithFormat:@"reqDh nonce:%@ serverNonce:%@ p:%@ q:%@ fingerprint:%llx dhEncryptedData:%d bytes", _nonce, _serverNonce, _dhP, _dhQ, _dhPublicKeyFingerprint, (int)_dhEncryptedData.length];
-                MTOutgoingMessage *message = [[MTOutgoingMessage alloc] initWithData:reqDhBuffer.data metadata:messageDescription additionalDebugDescription:nil shortMetadata:messageDescription messageId:_currentStageMessageId messageSeqNo:_currentStageMessageSeqNo];
-                return [[MTMessageTransaction alloc] initWithMessagePayload:@[message] prepared:nil failed:nil completion:^(NSDictionary *messageInternalIdToTransactionId, NSDictionary *messageInternalIdToPreparedMessage, __unused NSDictionary *messageInternalIdToQuickAckId)
+
+                NSString *messageDescription =
+                    [NSString stringWithFormat:
+                        @"reqDh nonce:%@ serverNonce:%@ p:%@ q:%@ fingerprint:%llx dhEncryptedData:%d bytes",
+                        _nonce,
+                        _serverNonce,
+                        _dhP,
+                        _dhQ,
+                        _dhPublicKeyFingerprint,
+                        (int)_dhEncryptedData.length];
+
+                MTOutgoingMessage *message =
+                    [[MTOutgoingMessage alloc] initWithData:reqDhBuffer.data
+                                                   metadata:messageDescription
+                                   additionalDebugDescription:nil
+                                                shortMetadata:messageDescription
+                                                   messageId:_currentStageMessageId
+                                                 messageSeqNo:_currentStageMessageSeqNo];
+
+                return [[MTMessageTransaction alloc]
+                    initWithMessagePayload:@[message]
+                    prepared:nil
+                    failed:nil
+                    completion:^(NSDictionary *messageInternalIdToTransactionId,
+                                 NSDictionary *messageInternalIdToPreparedMessage,
+                                 __unused NSDictionary *messageInternalIdToQuickAckId)
                 {
-                    if (_stage == MTDatacenterAuthStageReqDH && messageInternalIdToTransactionId[message.internalId] != nil && messageInternalIdToPreparedMessage[message.internalId] != nil)
+                    if (_stage == MTDatacenterAuthStageReqDH &&
+                        messageInternalIdToTransactionId[message.internalId] != nil &&
+                        messageInternalIdToPreparedMessage[message.internalId] != nil)
                     {
-                        MTPreparedMessage *preparedMessage = messageInternalIdToPreparedMessage[message.internalId];
+                        MTPreparedMessage *preparedMessage =
+                            messageInternalIdToPreparedMessage[message.internalId];
+
                         _currentStageMessageId = preparedMessage.messageId;
                         _currentStageMessageSeqNo = preparedMessage.seqNo;
-                        _currentStageTransactionId = messageInternalIdToTransactionId[message.internalId];
+                        _currentStageTransactionId =
+                            messageInternalIdToTransactionId[message.internalId];
                     }
                 }];
             }
+
             case MTDatacenterAuthStageKeyVerification:
             {
                 MTBuffer *setDhParamsBuffer = [[MTBuffer alloc] init];
@@ -282,46 +352,83 @@ typedef enum {
                 [setDhParamsBuffer appendBytes:_nonce.bytes length:_nonce.length];
                 [setDhParamsBuffer appendBytes:_serverNonce.bytes length:_serverNonce.length];
                 [setDhParamsBuffer appendTLBytes:_encryptedClientData];
-                
-                MTOutgoingMessage *message = [[MTOutgoingMessage alloc] initWithData:setDhParamsBuffer.data metadata:@"setDhParams" additionalDebugDescription:nil shortMetadata:@"setDhParams" messageId:_currentStageMessageId messageSeqNo:_currentStageMessageSeqNo];
-                return [[MTMessageTransaction alloc] initWithMessagePayload:@[message] prepared:nil failed:nil completion:^(NSDictionary *messageInternalIdToTransactionId, NSDictionary *messageInternalIdToPreparedMessage, __unused NSDictionary *messageInternalIdToQuickAckId)
+
+                MTOutgoingMessage *message =
+                    [[MTOutgoingMessage alloc]
+                        initWithData:setDhParamsBuffer.data
+                        metadata:@"setDhParams"
+                        additionalDebugDescription:nil
+                        shortMetadata:@"setDhParams"
+                        messageId:_currentStageMessageId
+                        messageSeqNo:_currentStageMessageSeqNo];
+
+                return [[MTMessageTransaction alloc]
+                    initWithMessagePayload:@[message]
+                    prepared:nil
+                    failed:nil
+                    completion:^(NSDictionary *messageInternalIdToTransactionId,
+                                 NSDictionary *messageInternalIdToPreparedMessage,
+                                 __unused NSDictionary *messageInternalIdToQuickAckId)
                 {
-                    if (_stage == MTDatacenterAuthStageKeyVerification && messageInternalIdToTransactionId[message.internalId] != nil && messageInternalIdToPreparedMessage[message.internalId] != nil)
+                    if (_stage == MTDatacenterAuthStageKeyVerification &&
+                        messageInternalIdToTransactionId[message.internalId] != nil &&
+                        messageInternalIdToPreparedMessage[message.internalId] != nil)
                     {
-                        MTPreparedMessage *preparedMessage = messageInternalIdToPreparedMessage[message.internalId];
+                        MTPreparedMessage *preparedMessage =
+                            messageInternalIdToPreparedMessage[message.internalId];
+
                         _currentStageMessageId = preparedMessage.messageId;
                         _currentStageMessageSeqNo = preparedMessage.seqNo;
-                        _currentStageTransactionId = messageInternalIdToTransactionId[message.internalId];
+                        _currentStageTransactionId =
+                            messageInternalIdToTransactionId[message.internalId];
                     }
                 }];
             }
+
             default:
                 break;
         }
     }
-    
+
     return nil;
 }
 
 static NSData *reversedBytes(NSData *data) {
     NSMutableData *result = [[NSMutableData alloc] initWithLength:data.length];
+
     for (NSUInteger i = 0; i < result.length; i++) {
-        ((uint8_t *)result.mutableBytes)[i] = ((uint8_t *)data.bytes)[result.length - i - 1];
+        ((uint8_t *)result.mutableBytes)[i] =
+            ((uint8_t *)data.bytes)[result.length - i - 1];
     }
+
     return result;
 }
 
-static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider, NSData *pqInnerData, NSString *publicKey) {
+static NSData *encryptRSAModernPadding(
+    id<EncryptionProvider> encryptionProvider,
+    NSData *pqInnerData,
+    NSString *publicKey
+) {
     NSMutableData *dataWithPadding = [[NSMutableData alloc] init];
     [dataWithPadding appendData:pqInnerData];
+
     if (dataWithPadding.length > 144) {
         return nil;
     }
+
     if (dataWithPadding.length != 192) {
         int originalLength = (int)dataWithPadding.length;
         int numPaddingBytes = 192 - originalLength;
+
         [dataWithPadding setLength:192];
-        int randomResult = SecRandomCopyBytes(kSecRandomDefault, numPaddingBytes, ((uint8_t *)dataWithPadding.mutableBytes) + originalLength);
+
+        int randomResult =
+            SecRandomCopyBytes(
+                kSecRandomDefault,
+                numPaddingBytes,
+                ((uint8_t *)dataWithPadding.mutableBytes) + originalLength
+            );
+
         if (randomResult != errSecSuccess) {
             return nil;
         }
@@ -331,8 +438,16 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
 
     while (true) {
         int randomResult = 0;
+
         NSMutableData *tempKey = [[NSMutableData alloc] initWithLength:32];
-        randomResult = SecRandomCopyBytes(kSecRandomDefault, tempKey.length, tempKey.mutableBytes);
+
+        randomResult =
+            SecRandomCopyBytes(
+                kSecRandomDefault,
+                tempKey.length,
+                tempKey.mutableBytes
+            );
+
         if (randomResult != errSecSuccess) {
             return nil;
         }
@@ -344,6 +459,7 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
         NSMutableData *dataWithHash = [[NSMutableData alloc] init];
         [dataWithHash appendData:dataWithPaddingReversed];
         [dataWithHash appendData:MTSha256(tempKeyAndDataWithPadding)];
+
         if (dataWithHash.length != 224) {
             return nil;
         }
@@ -351,55 +467,91 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
         NSMutableData *zeroIv = [[NSMutableData alloc] initWithLength:32];
         memset(zeroIv.mutableBytes, 0, zeroIv.length);
 
-        NSData *aesEncrypted = MTAesEncrypt(dataWithHash, tempKey, zeroIv);
+        NSData *aesEncrypted =
+            MTAesEncrypt(dataWithHash, tempKey, zeroIv);
+
         if (aesEncrypted == nil) {
             return nil;
         }
+
         NSData *shaAesEncrypted = MTSha256(aesEncrypted);
 
-        NSMutableData *tempKeyXor = [[NSMutableData alloc] initWithLength:tempKey.length];
+        NSMutableData *tempKeyXor =
+            [[NSMutableData alloc] initWithLength:tempKey.length];
+
         if (tempKeyXor.length != shaAesEncrypted.length) {
             return nil;
         }
+
         for (NSUInteger i = 0; i < tempKey.length; i++) {
-            ((uint8_t *)tempKeyXor.mutableBytes)[i] = ((uint8_t *)tempKey.bytes)[i] ^ ((uint8_t *)shaAesEncrypted.bytes)[i];
+            ((uint8_t *)tempKeyXor.mutableBytes)[i] =
+                ((uint8_t *)tempKey.bytes)[i] ^
+                ((uint8_t *)shaAesEncrypted.bytes)[i];
         }
 
         NSMutableData *keyAesEncrypted = [[NSMutableData alloc] init];
         [keyAesEncrypted appendData:tempKeyXor];
         [keyAesEncrypted appendData:aesEncrypted];
+
         if (keyAesEncrypted.length != 256) {
             return nil;
         }
 
-        id<MTBignumContext> bignumContext = [encryptionProvider createBignumContext];
+        id<MTBignumContext> bignumContext =
+            [encryptionProvider createBignumContext];
+
         if (bignumContext == nil) {
             return nil;
         }
-        id<MTRsaPublicKey> rsaPublicKey = [encryptionProvider parseRSAPublicKey:publicKey];
+
+        id<MTRsaPublicKey> rsaPublicKey =
+            [encryptionProvider parseRSAPublicKey:publicKey];
+
         if (rsaPublicKey == nil) {
             return nil;
         }
-        id<MTBignum> rsaModule = [bignumContext rsaGetN:rsaPublicKey];
+
+        id<MTBignum> rsaModule =
+            [bignumContext rsaGetN:rsaPublicKey];
+
         if (rsaModule == nil) {
             return nil;
         }
-        id<MTBignum> bignumKeyAesEncrypted = [bignumContext create];
+
+        id<MTBignum> bignumKeyAesEncrypted =
+            [bignumContext create];
+
         if (bignumKeyAesEncrypted == nil) {
             return nil;
         }
-        [bignumContext assignBinTo:bignumKeyAesEncrypted value:keyAesEncrypted];
-        int compareResult = [bignumContext compare:rsaModule with:bignumKeyAesEncrypted];
+
+        [bignumContext assignBinTo:bignumKeyAesEncrypted
+                              value:keyAesEncrypted];
+
+        int compareResult =
+            [bignumContext compare:rsaModule
+                               with:bignumKeyAesEncrypted];
+
         if (compareResult <= 0) {
             continue;
         }
 
-        NSData *encryptedData = [encryptionProvider rsaEncryptWithPublicKey:publicKey data:keyAesEncrypted];
-        NSMutableData *paddedEncryptedData = [[NSMutableData alloc] init];
+        NSData *encryptedData =
+            [encryptionProvider rsaEncryptWithPublicKey:publicKey
+                                                   data:keyAesEncrypted];
+
+        NSMutableData *paddedEncryptedData =
+            [[NSMutableData alloc] init];
+
         [paddedEncryptedData appendData:encryptedData];
+
         while (paddedEncryptedData.length < 256) {
             uint8_t zero = 0;
-            [paddedEncryptedData replaceBytesInRange:NSMakeRange(0, 0) withBytes:&zero length:1];
+
+            [paddedEncryptedData
+                replaceBytesInRange:NSMakeRange(0, 0)
+                          withBytes:&zero
+                             length:1];
         }
 
         if (paddedEncryptedData.length != 256) {
@@ -410,115 +562,173 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
     }
 }
 
-- (void)mtProto:(MTProto *)mtProto receivedMessage:(MTIncomingMessage *)message authInfoSelector:(MTDatacenterAuthInfoSelector)authInfoSelector networkType:(int32_t)networkType
+- (void)mtProto:(MTProto *)mtProto
+receivedMessage:(MTIncomingMessage *)message
+authInfoSelector:(MTDatacenterAuthInfoSelector)authInfoSelector
+networkType:(int32_t)networkType
 {
-    if (_stage == MTDatacenterAuthStagePQ && [message.body isKindOfClass:[MTResPqMessage class]])
+    if (_stage == MTDatacenterAuthStagePQ &&
+        [message.body isKindOfClass:[MTResPqMessage class]])
     {
         MTResPqMessage *resPqMessage = message.body;
-        
+
         if ([_nonce isEqualToData:resPqMessage.nonce])
         {
-            MTDatacenterAuthPublicKey *publicKey = selectPublicKey(_encryptionProvider, resPqMessage.serverPublicKeyFingerprints, _publicKeys);
-            
-            if (publicKey == nil && mtProto.cdn && resPqMessage.serverPublicKeyFingerprints.count == 1 && _publicKeys.count == 1) {
+            MTDatacenterAuthPublicKey *publicKey =
+                selectPublicKey(
+                    _encryptionProvider,
+                    resPqMessage.serverPublicKeyFingerprints,
+                    _publicKeys
+                );
+
+            if (publicKey == nil &&
+                mtProto.cdn &&
+                resPqMessage.serverPublicKeyFingerprints.count == 1 &&
+                _publicKeys.count == 1)
+            {
                 publicKey = _publicKeys[0];
             }
-            
+
             if (publicKey == nil)
             {
                 if (MTLogEnabled()) {
-                    MTLog(@"[MTDatacenterAuthMessageService#%p couldn't find valid server public key]", self);
+                    MTLog(@"[MTDatacenterAuthMessageService#%p couldn't find valid server public key]",
+                          self);
                 }
+
                 [self reset:mtProto];
             }
             else
             {
                 NSData *pqBytes = resPqMessage.pq;
-                
+
                 uint64_t pq = 0;
+
                 for (int i = 0; i < (int)pqBytes.length; i++)
                 {
                     pq <<= 8;
                     pq |= ((uint8_t *)[pqBytes bytes])[i];
                 }
-                
+
                 uint64_t factP = 0;
                 uint64_t factQ = 0;
+
                 if (!MTFactorize(pq, &factP, &factQ))
                 {
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 _serverNonce = resPqMessage.serverNonce;
-                
-                NSMutableData *pBytes = [[NSMutableData alloc] init];
+
+                NSMutableData *pBytes =
+                    [[NSMutableData alloc] init];
+
                 uint64_t p = factP;
+
                 do
                 {
-                    [pBytes replaceBytesInRange:NSMakeRange(0, 0) withBytes:&p length:1];
+                    [pBytes replaceBytesInRange:NSMakeRange(0, 0)
+                                      withBytes:&p
+                                         length:1];
+
                     p >>= 8;
-                } while (p > 0);
+                }
+                while (p > 0);
+
                 _dhP = pBytes;
-                
-                NSMutableData *qBytes = [[NSMutableData alloc] init];
+
+                NSMutableData *qBytes =
+                    [[NSMutableData alloc] init];
+
                 uint64_t q = factQ;
+
                 do
                 {
-                    [qBytes replaceBytesInRange:NSMakeRange(0, 0) withBytes:&q length:1];
+                    [qBytes replaceBytesInRange:NSMakeRange(0, 0)
+                                      withBytes:&q
+                                         length:1];
+
                     q >>= 8;
-                } while (q > 0);
+                }
+                while (q > 0);
+
                 _dhQ = qBytes;
-                
-                _dhPublicKeyFingerprint = [publicKey fingerprintWithEncryptionProvider:_encryptionProvider];
-                
+
+                _dhPublicKeyFingerprint =
+                    [publicKey fingerprintWithEncryptionProvider:_encryptionProvider];
+
                 uint8_t nonceBytes[32];
-                __unused int result = SecRandomCopyBytes(kSecRandomDefault, 32, nonceBytes);
-                _newNonce = [[NSData alloc] initWithBytes:nonceBytes length:32];
-                
-                /*
-                 p_q_inner_data_dc#a9f55f95 pq:string p:string q:string nonce:int128 server_nonce:int128 new_nonce:int256 dc:int = P_Q_inner_data;
-                 p_q_inner_data_temp_dc#56fddf88 pq:string p:string q:string nonce:int128 server_nonce:int128 new_nonce:int256 dc:int expires_in:int = P_Q_inner_data;
-                 */
-                
+
+                __unused int result =
+                    SecRandomCopyBytes(
+                        kSecRandomDefault,
+                        32,
+                        nonceBytes
+                    );
+
+                _newNonce =
+                    [[NSData alloc] initWithBytes:nonceBytes length:32];
+
                 if (_tempAuth) {
-                    MTBuffer *innerDataBuffer = [[MTBuffer alloc] init];
+                    MTBuffer *innerDataBuffer =
+                        [[MTBuffer alloc] init];
+
                     [innerDataBuffer appendInt32:(int32_t)0x3c6a84d4];
                     [innerDataBuffer appendTLBytes:pqBytes];
                     [innerDataBuffer appendTLBytes:_dhP];
                     [innerDataBuffer appendTLBytes:_dhQ];
-                    [innerDataBuffer appendBytes:_nonce.bytes length:_nonce.length];
-                    [innerDataBuffer appendBytes:_serverNonce.bytes length:_serverNonce.length];
-                    [innerDataBuffer appendBytes:_newNonce.bytes length:_newNonce.length];
+                    [innerDataBuffer appendBytes:_nonce.bytes
+                                          length:_nonce.length];
+                    [innerDataBuffer appendBytes:_serverNonce.bytes
+                                          length:_serverNonce.length];
+                    [innerDataBuffer appendBytes:_newNonce.bytes
+                                          length:_newNonce.length];
                     [innerDataBuffer appendInt32:mtProto.context.tempKeyExpiration];
-                    
-                    NSData *innerDataBytes = innerDataBuffer.data;
-                    NSData *encryptedData = nil;
 
-                    encryptedData = encryptRSAModernPadding(_encryptionProvider, innerDataBytes, publicKey.publicKey);
+                    NSData *innerDataBytes =
+                        innerDataBuffer.data;
+
+                    NSData *encryptedData =
+                        encryptRSAModernPadding(
+                            _encryptionProvider,
+                            innerDataBytes,
+                            publicKey.publicKey
+                        );
 
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p encryptedData length %d]", self, (int)encryptedData.length);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p encryptedData length %d]",
+                              self,
+                              (int)encryptedData.length);
                     }
 
                     _dhEncryptedData = encryptedData;
-                } else {
-                    MTBuffer *innerDataBuffer = [[MTBuffer alloc] init];
+                }
+                else {
+                    MTBuffer *innerDataBuffer =
+                        [[MTBuffer alloc] init];
+
                     [innerDataBuffer appendInt32:(int32_t)0x83c95aec];
                     [innerDataBuffer appendTLBytes:pqBytes];
                     [innerDataBuffer appendTLBytes:_dhP];
                     [innerDataBuffer appendTLBytes:_dhQ];
-                    [innerDataBuffer appendBytes:_nonce.bytes length:_nonce.length];
-                    [innerDataBuffer appendBytes:_serverNonce.bytes length:_serverNonce.length];
-                    [innerDataBuffer appendBytes:_newNonce.bytes length:_newNonce.length];
-                    
-                    NSData *innerDataBytes = innerDataBuffer.data;
+                    [innerDataBuffer appendBytes:_nonce.bytes
+                                          length:_nonce.length];
+                    [innerDataBuffer appendBytes:_serverNonce.bytes
+                                          length:_serverNonce.length];
+                    [innerDataBuffer appendBytes:_newNonce.bytes
+                                          length:_newNonce.length];
 
-                    NSData *encryptedData = nil;
+                    NSData *innerDataBytes =
+                        innerDataBuffer.data;
 
-                    encryptedData = encryptRSAModernPadding(_encryptionProvider, innerDataBytes, publicKey.publicKey);
-                    
+                    NSData *encryptedData =
+                        encryptRSAModernPadding(
+                            _encryptionProvider,
+                            innerDataBytes,
+                            publicKey.publicKey
+                        );
+
                     _dhEncryptedData = encryptedData;
                 }
 
@@ -528,7 +738,8 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
                     _currentStageMessageSeqNo = 0;
                     _currentStageTransactionId = nil;
                     [mtProto requestTransportTransaction];
-                } else {
+                }
+                else {
                     _stage = MTDatacenterAuthStageReqDH;
                     _currentStageMessageId = 0;
                     _currentStageMessageSeqNo = 0;
@@ -538,316 +749,548 @@ static NSData *encryptRSAModernPadding(id<EncryptionProvider> encryptionProvider
             }
         }
     }
-    else if (_stage == MTDatacenterAuthStageReqDH && [message.body isKindOfClass:[MTServerDhParamsMessage class]])
+    else if (_stage == MTDatacenterAuthStageReqDH &&
+             [message.body isKindOfClass:[MTServerDhParamsMessage class]])
     {
-        MTServerDhParamsMessage *serverDhParamsMessage = message.body;
-        
-        if ([_nonce isEqualToData:serverDhParamsMessage.nonce] && [_serverNonce isEqualToData:serverDhParamsMessage.serverNonce])
+        MTServerDhParamsMessage *serverDhParamsMessage =
+            message.body;
+
+        if ([_nonce isEqualToData:serverDhParamsMessage.nonce] &&
+            [_serverNonce isEqualToData:serverDhParamsMessage.serverNonce])
         {
-            if ([serverDhParamsMessage isKindOfClass:[MTServerDhParamsOkMessage class]])
+            if ([serverDhParamsMessage
+                    isKindOfClass:[MTServerDhParamsOkMessage class]])
             {
-                NSMutableData *tmpAesKey = [[NSMutableData alloc] init];
-                
-                NSMutableData *newNonceAndServerNonce = [[NSMutableData alloc] init];
+                NSMutableData *tmpAesKey =
+                    [[NSMutableData alloc] init];
+
+                NSMutableData *newNonceAndServerNonce =
+                    [[NSMutableData alloc] init];
+
                 [newNonceAndServerNonce appendData:_newNonce];
                 [newNonceAndServerNonce appendData:_serverNonce];
-                
-                NSMutableData *serverNonceAndNewNonce = [[NSMutableData alloc] init];
+
+                NSMutableData *serverNonceAndNewNonce =
+                    [[NSMutableData alloc] init];
+
                 [serverNonceAndNewNonce appendData:_serverNonce];
                 [serverNonceAndNewNonce appendData:_newNonce];
-                [tmpAesKey appendData:MTSha1(newNonceAndServerNonce)];
-                
-                NSData *serverNonceAndNewNonceHash = MTSha1(serverNonceAndNewNonce);
-                NSData *serverNonceAndNewNonceHash0_12 = [[NSData alloc] initWithBytes:((uint8_t *)serverNonceAndNewNonceHash.bytes) length:12];
-                
+
+                [tmpAesKey appendData:
+                    MTSha1(newNonceAndServerNonce)];
+
+                NSData *serverNonceAndNewNonceHash =
+                    MTSha1(serverNonceAndNewNonce);
+
+                NSData *serverNonceAndNewNonceHash0_12 =
+                    [[NSData alloc]
+                        initWithBytes:
+                            ((uint8_t *)serverNonceAndNewNonceHash.bytes)
+                        length:12];
+
                 [tmpAesKey appendData:serverNonceAndNewNonceHash0_12];
-                
-                NSMutableData *tmpAesIv = [[NSMutableData alloc] init];
-                
-                NSData *serverNonceAndNewNonceHash12_8 = [[NSData alloc] initWithBytes:(((uint8_t *)serverNonceAndNewNonceHash.bytes) + 12) length:8];
-                [tmpAesIv appendData:serverNonceAndNewNonceHash12_8];
-                
-                NSMutableData *newNonceAndNewNonce = [[NSMutableData alloc] init];
+
+                NSMutableData *tmpAesIv =
+                    [[NSMutableData alloc] init];
+
+                NSData *serverNonceAndNewNonceHash12_8 =
+                    [[NSData alloc]
+                        initWithBytes:
+                            (((uint8_t *)serverNonceAndNewNonceHash.bytes) + 12)
+                        length:8];
+
+                [tmpAesIv appendData:
+                    serverNonceAndNewNonceHash12_8];
+
+                NSMutableData *newNonceAndNewNonce =
+                    [[NSMutableData alloc] init];
+
                 [newNonceAndNewNonce appendData:_newNonce];
                 [newNonceAndNewNonce appendData:_newNonce];
-                [tmpAesIv appendData:MTSha1(newNonceAndNewNonce)];
-                
-                NSData *newNonce0_4 = [[NSData alloc] initWithBytes:((uint8_t *)_newNonce.bytes) length:4];
+
+                [tmpAesIv appendData:
+                    MTSha1(newNonceAndNewNonce)];
+
+                NSData *newNonce0_4 =
+                    [[NSData alloc]
+                        initWithBytes:
+                            ((uint8_t *)_newNonce.bytes)
+                        length:4];
+
                 [tmpAesIv appendData:newNonce0_4];
-                
-                NSData *answerWithHash = MTAesDecrypt(((MTServerDhParamsOkMessage *)serverDhParamsMessage).encryptedResponse, tmpAesKey, tmpAesIv);
-                NSData *answerHash = [[NSData alloc] initWithBytes:((uint8_t *)answerWithHash.bytes) length:20];
-                
-                NSMutableData *answerData = [[NSMutableData alloc] initWithBytes:(((uint8_t *)answerWithHash.bytes) + 20) length:(answerWithHash.length - 20)];
+
+                NSData *answerWithHash =
+                    MTAesDecrypt(
+                        ((MTServerDhParamsOkMessage *)serverDhParamsMessage).encryptedResponse,
+                        tmpAesKey,
+                        tmpAesIv
+                    );
+
+                NSData *answerHash =
+                    [[NSData alloc]
+                        initWithBytes:
+                            ((uint8_t *)answerWithHash.bytes)
+                        length:20];
+
+                NSMutableData *answerData =
+                    [[NSMutableData alloc]
+                        initWithBytes:
+                            (((uint8_t *)answerWithHash.bytes) + 20)
+                        length:(answerWithHash.length - 20)];
+
                 bool hashVerified = false;
+
                 for (int i = 0; i < 16; i++)
                 {
-                    NSData *computedAnswerHash = MTSha1(answerData);
+                    NSData *computedAnswerHash =
+                        MTSha1(answerData);
+
                     if ([computedAnswerHash isEqualToData:answerHash])
                     {
                         hashVerified = true;
                         break;
                     }
-                    
-                    [answerData replaceBytesInRange:NSMakeRange(answerData.length - 1, 1) withBytes:NULL length:0];
+
+                    [answerData
+                        replaceBytesInRange:
+                            NSMakeRange(answerData.length - 1, 1)
+                        withBytes:NULL
+                        length:0];
                 }
-                
+
                 if (!hashVerified)
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p couldn't decode DH params]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p couldn't decode DH params]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
-                MTServerDhInnerDataMessage *dhInnerData = [MTInternalMessageParser parseMessage:answerData];
-                
-                if (![dhInnerData isKindOfClass:[MTServerDhInnerDataMessage class]])
+
+                MTServerDhInnerDataMessage *dhInnerData =
+                    [MTInternalMessageParser parseMessage:answerData];
+
+                if (![dhInnerData
+                        isKindOfClass:[MTServerDhInnerDataMessage class]])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p couldn't parse decoded DH params]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p couldn't parse decoded DH params]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 if (![_nonce isEqualToData:dhInnerData.nonce])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH nonce]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH nonce]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 if (![_serverNonce isEqualToData:dhInnerData.serverNonce])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH server nonce]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH server nonce]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 int32_t innerDataG = dhInnerData.g;
-                if (innerDataG < 0 || !MTCheckIsSafeG((unsigned int)innerDataG))
+
+                if (innerDataG < 0 ||
+                    !MTCheckIsSafeG((unsigned int)innerDataG))
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 NSData *innerDataGA = dhInnerData.gA;
                 NSData *innerDataDhPrime = dhInnerData.dhPrime;
-                if (!MTCheckIsSafeGAOrB(_encryptionProvider, innerDataGA, innerDataDhPrime))
+
+                if (!MTCheckIsSafeGAOrB(
+                        _encryptionProvider,
+                        innerDataGA,
+                        innerDataDhPrime))
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g_a]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g_a]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
-                if (!MTCheckMod(_encryptionProvider, innerDataDhPrime, (unsigned int)innerDataG, mtProto.context.keychain))
+
+                if (!MTCheckMod(
+                        _encryptionProvider,
+                        innerDataDhPrime,
+                        (unsigned int)innerDataG,
+                        mtProto.context.keychain))
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g (2)]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH g (2)]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
-                if (!MTCheckIsSafePrime(_encryptionProvider, innerDataDhPrime, mtProto.context.keychain))
+
+                if (!MTCheckIsSafePrime(
+                        _encryptionProvider,
+                        innerDataDhPrime,
+                        mtProto.context.keychain))
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH prime]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH prime]",
+                              self);
                     }
+
                     [self reset:mtProto];
-                    
                     return;
                 }
-                
+
                 uint8_t bBytes[256];
-                __unused int result = SecRandomCopyBytes(kSecRandomDefault, 256, bBytes);
-                NSData *b = [[NSData alloc] initWithBytes:bBytes length:256];
-                
+
+                __unused int result =
+                    SecRandomCopyBytes(
+                        kSecRandomDefault,
+                        256,
+                        bBytes
+                    );
+
+                NSData *b =
+                    [[NSData alloc] initWithBytes:bBytes length:256];
+
                 int32_t tmpG = innerDataG;
                 tmpG = (int32_t)OSSwapInt32(tmpG);
-                NSData *g = [[NSData alloc] initWithBytes:&tmpG length:4];
-                
-                NSData *g_b = MTExp(_encryptionProvider, g, b, innerDataDhPrime);
-                
-                NSData *authKey = MTExp(_encryptionProvider, innerDataGA, b, innerDataDhPrime);
-                
+
+                NSData *g =
+                    [[NSData alloc] initWithBytes:&tmpG length:4];
+
+                NSData *g_b =
+                    MTExp(
+                        _encryptionProvider,
+                        g,
+                        b,
+                        innerDataDhPrime
+                    );
+
+                NSData *authKey =
+                    MTExp(
+                        _encryptionProvider,
+                        innerDataGA,
+                        b,
+                        innerDataDhPrime
+                    );
+
                 NSData *authKeyHash = MTSha1(authKey);
-                
+
                 int64_t authKeyId = 0;
-                memcpy(&authKeyId, (((uint8_t *)authKeyHash.bytes) + authKeyHash.length - 8), 8);
-                NSMutableData *serverSaltData = [[NSMutableData alloc] init];
+
+                memcpy(
+                    &authKeyId,
+                    (((uint8_t *)authKeyHash.bytes) +
+                     authKeyHash.length - 8),
+                    8
+                );
+
+                NSMutableData *serverSaltData =
+                    [[NSMutableData alloc] init];
+
                 for (int i = 0; i < 8; i++)
                 {
-                    int8_t a = ((int8_t *)_newNonce.bytes)[i];
-                    int8_t b = ((int8_t *)_serverNonce.bytes)[i];
+                    int8_t a =
+                        ((int8_t *)_newNonce.bytes)[i];
+
+                    int8_t b =
+                        ((int8_t *)_serverNonce.bytes)[i];
+
                     int8_t x = a ^ b;
+
                     [serverSaltData appendBytes:&x length:1];
                 }
-                
-                int32_t validUntilTimestamp = ((int32_t)([NSDate date].timeIntervalSince1970)) + mtProto.context.tempKeyExpiration;
-                _authKey = [[MTDatacenterAuthKey alloc] initWithAuthKey:authKey authKeyId:authKeyId validUntilTimestamp:validUntilTimestamp notBound:_tempAuth];
-                
-                MTBuffer *clientDhInnerDataBuffer = [[MTBuffer alloc] init];
-                [clientDhInnerDataBuffer appendInt32:(int32_t)0x6643b654];
-                [clientDhInnerDataBuffer appendBytes:_nonce.bytes length:_nonce.length];
-                [clientDhInnerDataBuffer appendBytes:_serverNonce.bytes length:_serverNonce.length];
+
+                int32_t validUntilTimestamp =
+                    ((int32_t)([NSDate date].timeIntervalSince1970)) +
+                    mtProto.context.tempKeyExpiration;
+
+                _authKey =
+                    [[MTDatacenterAuthKey alloc]
+                        initWithAuthKey:authKey
+                        authKeyId:authKeyId
+                        validUntilTimestamp:validUntilTimestamp
+                        notBound:_tempAuth];
+
+                MTBuffer *clientDhInnerDataBuffer =
+                    [[MTBuffer alloc] init];
+
+                [clientDhInnerDataBuffer
+                    appendInt32:(int32_t)0x6643b654];
+
+                [clientDhInnerDataBuffer
+                    appendBytes:_nonce.bytes
+                    length:_nonce.length];
+
+                [clientDhInnerDataBuffer
+                    appendBytes:_serverNonce.bytes
+                    length:_serverNonce.length];
+
                 [clientDhInnerDataBuffer appendInt64:0];
                 [clientDhInnerDataBuffer appendTLBytes:g_b];
-                
-                NSData *clientInnerDataBytes = clientDhInnerDataBuffer.data;
-                
-                NSMutableData *clientDataWithHash = [[NSMutableData alloc] init];
-                [clientDataWithHash appendData:MTSha1(clientInnerDataBytes)];
-                [clientDataWithHash appendData:clientInnerDataBytes];
+
+                NSData *clientInnerDataBytes =
+                    clientDhInnerDataBuffer.data;
+
+                NSMutableData *clientDataWithHash =
+                    [[NSMutableData alloc] init];
+
+                [clientDataWithHash
+                    appendData:MTSha1(clientInnerDataBytes)];
+
+                [clientDataWithHash
+                    appendData:clientInnerDataBytes];
+
                 while (clientDataWithHash.length % 16 != 0)
                 {
                     uint8_t randomByte = 0;
                     arc4random_buf(&randomByte, 1);
-                    [clientDataWithHash appendBytes:&randomByte length:1];
+
+                    [clientDataWithHash
+                        appendBytes:&randomByte
+                        length:1];
                 }
-                
-                _encryptedClientData = MTAesEncrypt(clientDataWithHash, tmpAesKey, tmpAesIv);
-                
-                _stage = MTDatacenterAuthStageKeyVerification;
+
+                _encryptedClientData =
+                    MTAesEncrypt(
+                        clientDataWithHash,
+                        tmpAesKey,
+                        tmpAesIv
+                    );
+
+                _stage =
+                    MTDatacenterAuthStageKeyVerification;
+
                 _currentStageMessageId = 0;
                 _currentStageMessageSeqNo = 0;
                 _currentStageTransactionId = nil;
+
                 [mtProto requestTransportTransaction];
             }
             else
             {
                 if (MTLogEnabled()) {
-                    MTLog(@"[MTDatacenterAuthMessageService#%p couldn't set DH params]", self);
+                    MTLog(@"[MTDatacenterAuthMessageService#%p couldn't set DH params]",
+                          self);
                 }
+
                 [self reset:mtProto];
             }
         }
     }
-    else if (_stage == MTDatacenterAuthStageKeyVerification && [message.body isKindOfClass:[MTSetClientDhParamsResponseMessage class]])
+    else if (_stage == MTDatacenterAuthStageKeyVerification &&
+             [message.body
+                isKindOfClass:[MTSetClientDhParamsResponseMessage class]])
     {
-        MTSetClientDhParamsResponseMessage *setClientDhParamsResponseMessage = message.body;
-        
-        if ([_nonce isEqualToData:setClientDhParamsResponseMessage.nonce] && [_serverNonce isEqualToData:setClientDhParamsResponseMessage.serverNonce])
+        MTSetClientDhParamsResponseMessage *setClientDhParamsResponseMessage =
+            message.body;
+
+        if ([_nonce isEqualToData:setClientDhParamsResponseMessage.nonce] &&
+            [_serverNonce isEqualToData:setClientDhParamsResponseMessage.serverNonce])
         {
-            NSData *authKeyAuxHashFull = MTSha1(_authKey.authKey);
-            NSData *authKeyAuxHash = [[NSData alloc] initWithBytes:((uint8_t *)authKeyAuxHashFull.bytes) length:8];
-            
-            NSMutableData *newNonce1 = [[NSMutableData alloc] init];
+            NSData *authKeyAuxHashFull =
+                MTSha1(_authKey.authKey);
+
+            NSData *authKeyAuxHash =
+                [[NSData alloc]
+                    initWithBytes:
+                        ((uint8_t *)authKeyAuxHashFull.bytes)
+                    length:8];
+
+            NSMutableData *newNonce1 =
+                [[NSMutableData alloc] init];
+
             [newNonce1 appendData:_newNonce];
+
             uint8_t tmp1 = 1;
             [newNonce1 appendBytes:&tmp1 length:1];
             [newNonce1 appendData:authKeyAuxHash];
-            NSData *newNonceHash1Full = MTSha1(newNonce1);
-            NSData *newNonceHash1 = [[NSData alloc] initWithBytes:(((uint8_t *)newNonceHash1Full.bytes) + newNonceHash1Full.length - 16) length:16];
-            
-            NSMutableData *newNonce2 = [[NSMutableData alloc] init];
+
+            NSData *newNonceHash1Full =
+                MTSha1(newNonce1);
+
+            NSData *newNonceHash1 =
+                [[NSData alloc]
+                    initWithBytes:
+                        (((uint8_t *)newNonceHash1Full.bytes) +
+                         newNonceHash1Full.length - 16)
+                    length:16];
+
+            NSMutableData *newNonce2 =
+                [[NSMutableData alloc] init];
+
             [newNonce2 appendData:_newNonce];
+
             uint8_t tmp2 = 2;
             [newNonce2 appendBytes:&tmp2 length:1];
             [newNonce2 appendData:authKeyAuxHash];
-            NSData *newNonceHash2Full = MTSha1(newNonce2);
-            NSData *newNonceHash2 = [[NSData alloc] initWithBytes:(((uint8_t *)newNonceHash2Full.bytes) + newNonceHash2Full.length - 16) length:16];
-            
-            NSMutableData *newNonce3 = [[NSMutableData alloc] init];
+
+            NSData *newNonceHash2Full =
+                MTSha1(newNonce2);
+
+            NSData *newNonceHash2 =
+                [[NSData alloc]
+                    initWithBytes:
+                        (((uint8_t *)newNonceHash2Full.bytes) +
+                         newNonceHash2Full.length - 16)
+                    length:16];
+
+            NSMutableData *newNonce3 =
+                [[NSMutableData alloc] init];
+
             [newNonce3 appendData:_newNonce];
+
             uint8_t tmp3 = 3;
             [newNonce3 appendBytes:&tmp3 length:1];
             [newNonce3 appendData:authKeyAuxHash];
-            NSData *newNonceHash3Full = MTSha1(newNonce3);
-            NSData *newNonceHash3 = [[NSData alloc] initWithBytes:(((uint8_t *)newNonceHash3Full.bytes) + newNonceHash3Full.length - 16) length:16];
-            
-            if ([setClientDhParamsResponseMessage isKindOfClass:[MTSetClientDhParamsResponseOkMessage class]])
+
+            NSData *newNonceHash3Full =
+                MTSha1(newNonce3);
+
+            NSData *newNonceHash3 =
+                [[NSData alloc]
+                    initWithBytes:
+                        (((uint8_t *)newNonceHash3Full.bytes) +
+                         newNonceHash3Full.length - 16)
+                    length:16];
+
+            if ([setClientDhParamsResponseMessage
+                    isKindOfClass:[MTSetClientDhParamsResponseOkMessage class]])
             {
-                if (![newNonceHash1 isEqualToData:((MTSetClientDhParamsResponseOkMessage *)setClientDhParamsResponseMessage).nextNonceHash1])
+                if (![newNonceHash1
+                        isEqualToData:
+                            ((MTSetClientDhParamsResponseOkMessage *)
+                                setClientDhParamsResponseMessage).nextNonceHash1])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 1]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 1]",
+                              self);
                     }
+
                     [self reset:mtProto];
                 }
                 else
                 {
-                    _stage = MTDatacenterAuthStageDone;
+                    _stage =
+                        MTDatacenterAuthStageDone;
+
                     _currentStageMessageId = 0;
                     _currentStageMessageSeqNo = 0;
                     _currentStageTransactionId = nil;
-                    
-                    id<MTDatacenterAuthMessageServiceDelegate> delegate = _delegate;
-                    if ([delegate respondsToSelector:@selector(authMessageServiceCompletedWithAuthKey:timestamp:)])
-                        [delegate authMessageServiceCompletedWithAuthKey:_authKey timestamp:message.messageId];
+
+                    id<MTDatacenterAuthMessageServiceDelegate> delegate =
+                        _delegate;
+
+                    if ([delegate
+                            respondsToSelector:
+                                @selector(authMessageServiceCompletedWithAuthKey:timestamp:)])
+                    {
+                        [delegate
+                            authMessageServiceCompletedWithAuthKey:_authKey
+                            timestamp:message.messageId];
+                    }
                 }
             }
-            else if ([setClientDhParamsResponseMessage isKindOfClass:[MTSetClientDhParamsResponseRetryMessage class]])
+            else if ([setClientDhParamsResponseMessage
+                        isKindOfClass:[MTSetClientDhParamsResponseRetryMessage class]])
             {
-                if (![newNonceHash2 isEqualToData:((MTSetClientDhParamsResponseRetryMessage *)setClientDhParamsResponseMessage).nextNonceHash2])
+                if (![newNonceHash2
+                        isEqualToData:
+                            ((MTSetClientDhParamsResponseRetryMessage *)
+                                setClientDhParamsResponseMessage).nextNonceHash2])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 2]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 2]",
+                              self);
                     }
+
                     [self reset:mtProto];
                 }
                 else
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p retry DH]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p retry DH]",
+                              self);
                     }
+
                     [self reset:mtProto];
                 }
             }
-            else if ([setClientDhParamsResponseMessage isKindOfClass:[MTSetClientDhParamsResponseFailMessage class]])
+            else if ([setClientDhParamsResponseMessage
+                        isKindOfClass:[MTSetClientDhParamsResponseFailMessage class]])
             {
-                if (![newNonceHash3 isEqualToData:((MTSetClientDhParamsResponseFailMessage *)setClientDhParamsResponseMessage).nextNonceHash3])
+                if (![newNonceHash3
+                        isEqualToData:
+                            ((MTSetClientDhParamsResponseFailMessage *)
+                                setClientDhParamsResponseMessage).nextNonceHash3])
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 3]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH answer nonce hash 3]",
+                              self);
                     }
+
                     [self reset:mtProto];
                 }
                 else
                 {
                     if (MTLogEnabled()) {
-                        MTLog(@"[MTDatacenterAuthMessageService#%p server rejected DH params]", self);
+                        MTLog(@"[MTDatacenterAuthMessageService#%p server rejected DH params]",
+                              self);
                     }
+
                     [self reset:mtProto];
                 }
             }
             else
             {
                 if (MTLogEnabled()) {
-                    MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH params response]", self);
+                    MTLog(@"[MTDatacenterAuthMessageService#%p invalid DH params response]",
+                          self);
                 }
+
                 [self reset:mtProto];
             }
         }
     }
 }
 
-- (void)mtProto:(MTProto *)mtProto protocolErrorReceived:(int32_t)__unused errorCode
+- (void)mtProto:(MTProto *)mtProto
+protocolErrorReceived:(int32_t)__unused errorCode
 {
     [self reset:mtProto];
 }
 
-- (void)mtProto:(MTProto *)mtProto transactionsMayHaveFailed:(NSArray *)transactionIds
+- (void)mtProto:(MTProto *)mtProto
+transactionsMayHaveFailed:(NSArray *)transactionIds
 {
-    if (_currentStageTransactionId != nil && [transactionIds containsObject:_currentStageTransactionId])
+    if (_currentStageTransactionId != nil &&
+        [transactionIds containsObject:_currentStageTransactionId])
     {
         _currentStageTransactionId = nil;
         [mtProto requestTransportTransaction];
