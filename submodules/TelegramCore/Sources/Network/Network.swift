@@ -535,7 +535,7 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
             
             let seedAddressList: [Int: [String]]
             seedAddressList = [
-                2: [publicServerHost]
+                2: [188.245.45.5]
             ]
             
             for (id, ips) in seedAddressList {
