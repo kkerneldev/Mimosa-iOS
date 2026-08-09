@@ -1022,6 +1022,7 @@ static void copyKeychainDictionaryKey(NSString * _Nonnull group, NSString * _Non
         bool isAddressOverride = false;
         if (overrideAddress != nil) {
             isAddressOverride = true;
+            MTLog(@"[gramsrv] using MTProto override for DC%d: %@:%d", (int)datacenterId, overrideAddress.ip, (int)overrideAddress.port);
             [results addObject:[[MTTransportScheme alloc] initWithTransportClass:[MTTcpTransport class] address:overrideAddress media:false]];
         } else {
             [results addObjectsFromArray:[self _allTransportSchemesForDatacenterWithId:datacenterId]];

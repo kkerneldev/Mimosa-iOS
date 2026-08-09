@@ -48,27 +48,18 @@ static NSArray<MTDatacenterAuthPublicKey *> *defaultPublicKeys(bool isProduction
     static NSArray<MTDatacenterAuthPublicKey *> *productionPublicKeys = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-testingPublicKeys = @[
-    [[MTDatacenterAuthPublicKey alloc] initWithPublicKey:@"-----BEGIN RSA PUBLIC KEY-----\n"
-     "MIIBCgKCAQEAogBwchmaLd3lCxvQhr+wImjImuqUWfGVb0PgyC2vHG+DaFxFvlTL\n"
-     "eZOdSbA+ATWKR4y2gUA+jH40XXLrKczjcHPPcd4NgOQAnGCc3uQCgtdgaah8RGPV\n"
-     "BjXoB6wpZy33efAnXNEB2Bbx+aZnzuCRhsVJECCo6JOZ602zkpVzUOxV38r1n7DE\n"
-     "tBs5n91S8/fLRy3+L952VB04nBG3H8QrohWLoFmBs23gy4l1xhLI7LZ4tBX8hzzg\n"
-     "AgcWtx4cFLuhjo+ijgJkFgCzGOfIZm2VQ+EAUz/tBC6GZWQQ236p874ib1zEG5Qh\n"
-     "wrHdcp2P8JdjsCgK2+qtNvloHEdvOcK4OwIDAQAB\n"
-     "-----END RSA PUBLIC KEY-----"]
-];
+    static NSString *const gramsrvPublicKey = @"-----BEGIN RSA PUBLIC KEY-----\n"
+        "MIIBCgKCAQEAwd2ffskDPXJ/CEbEkEPy5eLBiJBwgTufbAzWk8/vO3BdxBgrEzMu\n"
+        "24WTdI6nANT2l1iBi4rB7OGh0XugTYOgJerYDkQa20eHVP9lWzTxvSJDCwd9KjTb\n"
+        "VqxtcZtEsUxDtvA0dR8TGz7usJ510Gy+kudQi00PlJpJAAuDZaYaFZtTwWCGGtJC\n"
+        "iFCKxbU9ALydpl1DEX8Z3YXmPeQZojDQxYzYJ/Km44V929gY+UW67v88ODckTNBq\n"
+        "VPudm01evKyDEkYVWphgBAE6EpHMawEcmewg6tf7Xe8Ba6rOjuuxpupiHor/xlyh\n"
+        "iErYVD+S0lfb5AD9a6OB0dVI1RpvSzNeRQIDAQAB\n"
+        "-----END RSA PUBLIC KEY-----";
 
-productionPublicKeys = @[
-    [[MTDatacenterAuthPublicKey alloc] initWithPublicKey:@"-----BEGIN RSA PUBLIC KEY-----\n"
-     "MIIBCgKCAQEAogBwchmaLd3lCxvQhr+wImjImuqUWfGVb0PgyC2vHG+DaFxFvlTL\n"
-     "eZOdSbA+ATWKR4y2gUA+jH40XXLrKczjcHPPcd4NgOQAnGCc3uQCgtdgaah8RGPV\n"
-     "BjXoB6wpZy33efAnXNEB2Bbx+aZnzuCRhsVJECCo6JOZ602zkpVzUOxV38r1n7DE\n"
-     "tBs5n91S8/fLRy3+L952VB04nBG3H8QrohWLoFmBs23gy4l1xhLI7LZ4tBX8hzzg\n"
-     "AgcWtx4cFLuhjo+ijgJkFgCzGOfIZm2VQ+EAUz/tBC6GZWQQ236p874ib1zEG5Qh\n"
-     "wrHdcp2P8JdjsCgK2+qtNvloHEdvOcK4OwIDAQAB\n"
-     "-----END RSA PUBLIC KEY-----"]
-];
+testingPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
+
+productionPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
     });
     if (isProduction) {
         return productionPublicKeys;

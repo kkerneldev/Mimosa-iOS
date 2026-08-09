@@ -526,13 +526,20 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
                 }
             }
             
+            let publicServerHost = "188.245.45.5"
+            let publicServerPort: UInt16 = 2398
+            print("[gramsrv] MTProto override: dc=2 host=\(publicServerHost) port=\(publicServerPort)")
+            apiEnvironment.datacenterAddressOverrides = [
+                NSNumber(value: 2): MTDatacenterAddress(ip: publicServerHost, port: publicServerPort, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil)
+            ]
+            
             let seedAddressList: [Int: [String]]
             seedAddressList = [
-                2: ["188.245.45.5"]
+                2: [publicServerHost]
             ]
             
             for (id, ips) in seedAddressList {
-                context.setSeedAddressSetForDatacenterWithId(id, seedAddressSet: MTDatacenterAddressSet(addressList: ips.map { MTDatacenterAddress(ip: $0, port: 2398, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil) }))
+                context.setSeedAddressSetForDatacenterWithId(id, seedAddressSet: MTDatacenterAddressSet(addressList: ips.map { MTDatacenterAddress(ip: $0, port: publicServerPort, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil) }))
             }
             
             context.keychain = keychain
