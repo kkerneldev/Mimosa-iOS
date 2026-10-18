@@ -5,10 +5,6 @@ import SwiftSignalKit
 import MtProtoKit
 import NetworkLogging
 
-#if os(iOS)
-    import CloudData
-#endif
-
 import EncryptionProvider
 
 public enum ConnectionStatus: Equatable {
@@ -459,10 +455,6 @@ public struct NetworkInitializationArguments {
         self.isICloudEnabled = isICloudEnabled
     }
 }
-#if os(iOS)
-private let cloudDataContext = Atomic<CloudDataContext?>(value: nil)
-#endif
-
 func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializationArguments, supplementary: Bool, datacenterId: Int, keychain: Keychain, basePath: String, testingEnvironment: Bool, languageCode: String?, proxySettings: ProxySettings?, networkSettings: NetworkSettings?, phoneNumber: String?, useRequestTimeoutTimers: Bool, appConfiguration: AppConfiguration) -> Signal<Network, NoError> {
     return Signal { subscriber in
         let queue = Queue()
@@ -504,6 +496,17 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
             }
             
             let useTempAuthKeys: Bool = true
+
+            // All DC labels belong to the same self-hosted backend, including media.
+            let publicServerHost = "188.227.220.178"
+            let publicServerPort: UInt16 = 2398
+            let serverAddress = MTDatacenterAddress(ip: publicServerHost, port: publicServerPort, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil)
+            var addressOverrides: [NSNumber: MTDatacenterAddress] = [:]
+            for id in 1 ... 5 {
+                addressOverrides[NSNumber(value: id)] = serverAddress
+            }
+            apiEnvironment.datacenterAddressOverrides = addressOverrides
+            print("[gramsrv] MTProto override: dc=2 host=\(publicServerHost) port=\(publicServerPort)")
             
             let context = MTContext(serialization: serialization, encryptionProvider: arguments.encryptionProvider, apiEnvironment: apiEnvironment, isTestingEnvironment: testingEnvironment, useTempAuthKeys: useTempAuthKeys)
             
@@ -526,51 +529,14 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
                 }
             }
             
-            let publicServerHost = "188.245.45.5"
-            let publicServerPort: UInt16 = 2398
-            print("[gramsrv] MTProto override: dc=2 host=\(publicServerHost) port=\(publicServerPort)")
-            apiEnvironment.datacenterAddressOverrides = [
-                NSNumber(value: 2): MTDatacenterAddress(ip: publicServerHost, port: publicServerPort, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil)
-            ]
-            
-            let seedAddressList: [Int: [String]]
-            seedAddressList = [
-                2: [188.245.45.5]
-            ]
-            
-            for (id, ips) in seedAddressList {
-                context.setSeedAddressSetForDatacenterWithId(id, seedAddressSet: MTDatacenterAddressSet(addressList: ips.map { MTDatacenterAddress(ip: $0, port: publicServerPort, preferForMedia: false, restrictToTcp: true, cdn: false, preferForProxy: false, secret: nil) }))
+            for id in 1 ... 5 {
+                context.setSeedAddressSetForDatacenterWithId(id, seedAddressSet: MTDatacenterAddressSet(addressList: [serverAddress]))
             }
             
             context.keychain = keychain
-            var wrappedAdditionalSource: MTSignal?
-            #if os(iOS)
-            if #available(iOS 10.0, *), !supplementary, arguments.isICloudEnabled {
-                var cloudDataContextValue: CloudDataContext?
-                if let value = cloudDataContext.with({ $0 }) {
-                    cloudDataContextValue = value
-                } else {
-                    cloudDataContextValue = makeCloudDataContext(encryptionProvider: arguments.encryptionProvider)
-                    let _ = cloudDataContext.swap(cloudDataContextValue)
-                }
-                
-                if let cloudDataContext = cloudDataContextValue {
-                    wrappedAdditionalSource = MTSignal(generator: { subscriber in
-                        let disposable = cloudDataContext.get(phoneNumber: .single(phoneNumber)).start(next: { value in
-                            subscriber?.putNext(value)
-                        }, completed: {
-                            subscriber?.putCompletion()
-                        })
-                        return MTBlockDisposable(block: {
-                            disposable.dispose()
-                        })
-                    })
-                }
-            }
-            #endif
             
             if !supplementary {
-                context.setDiscoverBackupAddressListSignal(MTBackupAddressSignals.fetchBackupIps(testingEnvironment, currentContext: context, additionalSource: wrappedAdditionalSource, phoneNumber: phoneNumber, mainDatacenterId: datacenterId))
+                // Telegram's DNS/iCloud backup addresses do not belong to this server.
                 let externalRequestVerificationStream = arguments.externalRequestVerificationStream
                 context.setExternalRequestVerification({ nonce in
                     return MTSignal(generator: { subscriber in

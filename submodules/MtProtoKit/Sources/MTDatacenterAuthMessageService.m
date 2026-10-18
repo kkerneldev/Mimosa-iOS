@@ -48,18 +48,17 @@ static NSArray<MTDatacenterAuthPublicKey *> *defaultPublicKeys(bool isProduction
     static NSArray<MTDatacenterAuthPublicKey *> *productionPublicKeys = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-    static NSString *const gramsrvPublicKey = @"-----BEGIN RSA PUBLIC KEY-----\n"
-        "MIIBCgKCAQEAwd2ffskDPXJ/CEbEkEPy5eLBiJBwgTufbAzWk8/vO3BdxBgrEzMu\n"
-        "24WTdI6nANT2l1iBi4rB7OGh0XugTYOgJerYDkQa20eHVP9lWzTxvSJDCwd9KjTb\n"
-        "VqxtcZtEsUxDtvA0dR8TGz7usJ510Gy+kudQi00PlJpJAAuDZaYaFZtTwWCGGtJC\n"
-        "iFCKxbU9ALydpl1DEX8Z3YXmPeQZojDQxYzYJ/Km44V929gY+UW67v88ODckTNBq\n"
-        "VPudm01evKyDEkYVWphgBAE6EpHMawEcmewg6tf7Xe8Ba6rOjuuxpupiHor/xlyh\n"
-        "iErYVD+S0lfb5AD9a6OB0dVI1RpvSzNeRQIDAQAB\n"
-        "-----END RSA PUBLIC KEY-----";
+        static NSString *const gramsrvPublicKey = @"-----BEGIN RSA PUBLIC KEY-----\n"
+            "MIIBCgKCAQEAxF//0M0+/5PzgdNagTX+J+dJgr75ZCTuiG8i4x7YwmJF+jiOGCjm\n"
+            "7X7BLCaMc1+hOZYDL3+Gvle/AKykW1qouaCJMVx/H+2l8LFXLelZ2PLawTb8A7Bl\n"
+            "TqWzL3db5BugMNWziL9TuhR8In1bwKY07QVpR9in5zjAsAGLBk+mGt0DnVyMf1Xo\n"
+            "p2lLCFNmm0F4ykcAeaLCCIPbGWddliLY8xEEhI4GO2l1U3kZMwIOdOnAGJFtgUAo\n"
+            "Te+FHR6F1s9adCVZB1teL/hf9R+WmekJwygVz0MYEH7y6U49T45+/W7OF6X6g0W0\n"
+            "j1uSSrsY4qN7twxbTad9zdGZ7ys+9v+PuQIDAQAB\n"
+            "-----END RSA PUBLIC KEY-----";
 
-testingPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
-
-productionPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
+        testingPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
+        productionPublicKeys = @[[[MTDatacenterAuthPublicKey alloc] initWithPublicKey:gramsrvPublicKey]];
     });
     if (isProduction) {
         return productionPublicKeys;
