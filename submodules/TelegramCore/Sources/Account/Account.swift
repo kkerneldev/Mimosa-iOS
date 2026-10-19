@@ -1294,7 +1294,7 @@ public class Account {
         }).start()
         self.notificationAutolockReportManager = NotificationAutolockReportManager(deadline: self.autolockReportDeadline.get(), network: network)
         self.autolockReportDeadline.set(
-            networkArguments.autolockDeadine
+            networkArguments.autolockDeadline
             |> distinctUntilChanged
         )
         

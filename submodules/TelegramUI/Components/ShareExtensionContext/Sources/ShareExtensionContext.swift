@@ -416,7 +416,7 @@ public class ShareRootControllerImpl {
                 appData: .single(nil),
                 externalRequestVerificationStream: .never(),
                 externalRecaptchaRequestVerification: { _, _ in return .never() },
-                autolockDeadine: .single(nil),
+                autolockDeadline: .single(nil),
                 encryptionProvider: OpenSSLEncryptionProvider(),
                 deviceModelName: nil,
                 useBetaFeatures: initializationData.useBetaFeatures,

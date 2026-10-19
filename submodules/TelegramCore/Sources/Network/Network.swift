@@ -5,6 +5,10 @@ import SwiftSignalKit
 import MtProtoKit
 import NetworkLogging
 
+#if os(iOS)
+    import CloudData
+#endif
+
 import EncryptionProvider
 
 public enum ConnectionStatus: Equatable {

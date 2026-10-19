@@ -549,11 +549,11 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         let apiHash: String = buildConfig.apiHash
         let languagesCategory = "ios"
         
-        let autolockDeadine: Signal<Int32?, NoError>
+        let autolockDeadline: Signal<Int32?, NoError>
         if #available(iOS 10.0, *) {
-            autolockDeadine = .single(nil)
+            autolockDeadline = .single(nil)
         } else {
-            autolockDeadine = self.context.get()
+            autolockDeadline = self.context.get()
             |> mapToSignal { context -> Signal<Int32?, NoError> in
                 guard let context = context else {
                     return .single(nil)
@@ -644,7 +644,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
                 }
                 |> runOn(Queue.mainQueue())
             },
-            autolockDeadine: autolockDeadine,
+            autolockDeadline: autolockDeadline,
             encryptionProvider: OpenSSLEncryptionProvider(),
             deviceModelName: nil,
             useBetaFeatures: !buildConfig.isAppStoreBuild,
